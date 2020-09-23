@@ -27,6 +27,18 @@ export default {
           })
       })
     },
+    register(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('http://127.0.0.1:3000/users/register', payload)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => {
+            reject(error.response.data.message)
+          })
+      })
+    },
     interceptorRequest(context) {
       axios.interceptors.request.use(
         function(config) {
