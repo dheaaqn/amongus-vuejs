@@ -1,71 +1,92 @@
 <template>
   <div class="login">
-    <b-card border-variant="white">
-      <b-alert show variant="danger" v-show="isError" dismissible>{{
-        error
-      }}</b-alert>
-      <b-card-header header-bg-variant="white" header-border-variant="white">
-        <b-card-text>
-          <h1>Login</h1>
-        </b-card-text>
-        <b-card-text>
-          <p class="text-left">Hi, Welcome back!</p>
-        </b-card-text>
-      </b-card-header>
-      <b-card-body>
-        <b-form @submit.prevent="onSubmit">
-          <b-form-group id="input-group-1">
-            <label for="input-1">Email</label>
-            <b-form-input
-              id="input-1"
-              type="email"
-              size="sm"
-              required
-              v-model="form.user_email"
-            ></b-form-input>
-          </b-form-group>
+    <b-row align-h="center" align-v="center">
+      <b-col>
+        <b-alert
+          show
+          variant="danger"
+          v-if="isError"
+          dismissible
+          @dismissed="closeAlert"
+          >{{ error }}</b-alert
+        >
+        <b-card border-variant="white">
+          <b-card-header
+            header-bg-variant="white"
+            header-border-variant="white"
+          >
+            <b-card-text>
+              <h1>Login</h1>
+            </b-card-text>
+            <b-card-text>
+              <p class="text-left">Hi, Welcome back!</p>
+            </b-card-text>
+          </b-card-header>
+          <b-card-body>
+            <b-form @submit.prevent="onSubmit">
+              <b-form-group id="input-group-1">
+                <label for="input-1">Email</label>
+                <b-form-input
+                  id="input-1"
+                  type="email"
+                  size="sm"
+                  required
+                  v-model="form.user_email"
+                ></b-form-input>
+              </b-form-group>
 
-          <b-form-group id="input-group-2">
-            <label for="input-2">Password</label>
-            <b-form-input
-              id="input-2"
-              type="password"
-              size="sm"
-              required
-              v-model="form.user_password"
-            ></b-form-input>
-          </b-form-group>
+              <b-form-group id="input-group-2">
+                <label for="input-2">Password</label>
+                <b-form-input
+                  id="input-2"
+                  type="password"
+                  size="sm"
+                  required
+                  v-model="form.user_password"
+                ></b-form-input>
+              </b-form-group>
 
-          <b-card-text>
-            <p class="text-right">Forgot Password?</p>
-          </b-card-text>
+              <b-card-text>
+                <p class="text-right">Forgot Password?</p>
+              </b-card-text>
 
-          <b-button type="submit" block>Submit</b-button>
-        </b-form>
-      </b-card-body>
-      <b-card-footer footer-bg-variant="white" footer-border-variant="white">
-        <b-card-text>
-          <p class="text-center">Don't have an account? <span>Sign Up</span></p>
-        </b-card-text>
-      </b-card-footer>
-    </b-card>
+              <b-button type="submit" block>Submit</b-button>
+            </b-form>
+          </b-card-body>
+          <b-card-footer
+            footer-bg-variant="white"
+            footer-border-variant="white"
+          >
+            <b-card-text>
+              <p class="text-center">
+                Don't have an account?
+                <router-link to="/register">Sign Up</router-link>
+              </p>
+            </b-card-text>
+          </b-card-footer>
+        </b-card>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
 <style scoped>
 .login {
-  text-align: left;
+  overflow: hidden;
+}
+
+.row {
   background: #f6f6f6;
   height: 100vh;
-  padding: 100px;
+}
+
+.col {
+  max-width: 30rem;
 }
 
 .card {
   border-radius: 30px;
   box-shadow: 0px 20px 20px rgba(126, 152, 223, 0.05);
-  max-height: 37rem;
-  max-width: 25rem;
-  margin: auto;
 }
 
 .card-header h1 {
@@ -116,14 +137,59 @@
 }
 
 @media screen and (max-width: 768px) {
-  .login {
-    padding: 50px;
+  .card-header h1 {
+    font-size: 20px;
+  }
+
+  .card-header .text-left {
+    font-size: 12px;
+  }
+
+  .card-body .text-right {
+    font-size: 14px;
+  }
+
+  .form-group label {
+    font-size: 12px;
+  }
+
+  .btn-secondary {
+    font-size: 14px;
+    padding: 0.6em;
+  }
+
+  .card-footer .text-center {
+    font-size: 12px;
   }
 }
 
-@media screen and (max-width: 375px) {
-  .login {
-    padding: 40px;
+@media screen and (max-width: 425px) {
+  .col {
+    max-width: 20rem;
+  }
+  .card-header h1 {
+    font-size: 18px;
+  }
+
+  .card-header .text-left {
+    font-size: 10px;
+  }
+
+  .card-body .text-right {
+    font-size: 12px;
+  }
+
+  .form-group label {
+    font-size: 10px;
+  }
+
+  .btn-secondary {
+    font-size: 12px;
+    padding: 0.4em;
+  }
+
+  .card-footer .text-center {
+    font-size: 10px;
   }
 }
 </style>
@@ -152,6 +218,9 @@ export default {
           this.isError = true
           this.error = error
         })
+    },
+    closeAlert() {
+      this.isError = false
     }
   }
 }
