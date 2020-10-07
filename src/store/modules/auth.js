@@ -10,6 +10,10 @@ export default {
     setUser(state, payload) {
       state.user = payload
       state.token = payload.token
+    },
+    delUser(state, payload) {
+      state.user = {}
+      state.token = null
     }
   },
   actions: {
@@ -38,6 +42,12 @@ export default {
             reject(error.response.data.message)
           })
       })
+    },
+    logout(context) {
+      localStorage.removeItem('token')
+      sessionStorage.clear()
+      context.commit('delUser')
+      router.push('/login')
     },
     interceptorRequest(context) {
       axios.interceptors.request.use(
@@ -88,6 +98,9 @@ export default {
     },
     setUser(state) {
       return state.user
+    },
+    getUserId(state) {
+      return state.user.user_id
     }
   }
 }

@@ -212,7 +212,7 @@ export default {
     onSubmit() {
       this.login(this.form)
         .then(result => {
-          this.$router.push('/')
+          this.$router.push('/home')
         })
         .catch(error => {
           this.isError = true
