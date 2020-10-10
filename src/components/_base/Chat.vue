@@ -7,11 +7,14 @@
       <div class="room-header">
         <b-row class="room-header-row">
           <b-col cols="1" class="rooms-pict" align-self="center">
-            <b-img :src="room.pict" style="width: 64px; height: 64px" />
+            <b-img
+              :src="'http://127.0.0.1:3000/' + room.user_image"
+              style="width: 64px; height: 64px"
+            />
           </b-col>
           <b-col cols="10" align-self="center">
-            <p class="room-name">{{ room.name }}</p>
-            <p class="room-status">{{ room.status }}</p>
+            <p class="room-name">{{ room.user_name }}</p>
+            <p class="room-status">online</p>
           </b-col>
           <b-col cols="1" align-self="center">
             <b-img :src="require('../../assets/icon/profile-menu.png')" />
@@ -50,15 +53,8 @@ export default {
   data() {
     return {
       socket: io('http://localhost:3000'),
-      isSelected: false,
-      receiverId: 2,
-      roomId: 1234,
-      messages: [],
-      room: {
-        pict: require('../../assets/img/profile.png'),
-        name: 'Mother ❤',
-        status: 'Online'
-      }
+      isSelected: true,
+      messages: []
     }
   },
   components: {
@@ -68,9 +64,9 @@ export default {
     handleSendMessage(data) {
       const dataMessage = {
         msg_body: data.msg,
-        msg_sender_id: this.userId,
-        msg_receiver_id: this.receiverId,
-        room_id: this.roomId
+        msg_sender_id: this.room.sender_id,
+        msg_receiver_id: this.room.receiver_id,
+        room_id: this.room.room_id
       }
       this.socket.emit('sendMessage', dataMessage, (data) => {
         this.messages.push(data)
@@ -78,10 +74,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ userId: 'getUserId' })
+    ...mapGetters({ userId: 'getUserId', room: 'getRoom' })
   },
   mounted() {
-    this.socket.emit('privateMessage', this.roomId)
+    this.socket.emit('privateMessage', this.room.room_id)
 
     this.socket.on('chatMessage', (data) => {
       this.messages.push(data)

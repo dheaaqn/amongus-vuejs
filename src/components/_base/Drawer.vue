@@ -129,7 +129,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
   name: 'Drawer',
   data() {
@@ -147,7 +147,14 @@ export default {
     this.getListRoom(this.userId)
   },
   methods: {
-    ...mapActions(['searchUser', 'addFriend', 'getListFriend', 'getListRoom']),
+    ...mapActions([
+      'searchUser',
+      'addFriend',
+      'getListFriend',
+      'getListRoom',
+      'getRoomById'
+    ]),
+    ...mapMutations(['setRoomId']),
     searchFriend() {
       this.searchUser(this.keyword)
         .then((response) => {
@@ -183,7 +190,11 @@ export default {
         })
     },
     selectingRoom(data) {
-      console.log(data)
+      const setData = {
+        room_id: data.room_id,
+        sender_id: this.userId
+      }
+      this.getRoomById(setData)
     }
   },
   computed: {
