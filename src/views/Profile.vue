@@ -44,6 +44,17 @@
           </b-col>
           <b-card-body>
             <b-img :src="'http://127.0.0.1:3000/' + profile.user_image"></b-img>
+            <div class="edit-icon">
+              <input
+                type="file"
+                ref="file"
+                @change="upFile"
+                style="display: none"
+              />
+              <p @click="$refs.file.click()" style="cursor: pointer">
+                Edit <b-icon icon="pencil-fill"></b-icon>
+              </p>
+            </div>
             <b-card-text class="name"> @{{ profile.user_name }} </b-card-text>
             <b-card-text class="email">
               {{ profile.user_email }}
@@ -52,7 +63,9 @@
               {{ profile.user_phone }}
             </b-card-text>
             <b-card-text class="location"> Location </b-card-text>
-            <GmapMap :center="coordinate" :zoom="10">
+            <b-button size="sm" v-b-modal.open-location>show my location</b-button>
+            <b-modal id="open-location" title="My Location" hide-footer centered>
+              <GmapMap :center="coordinate" :zoom="10">
               <GmapMarker
                 :position="coordinate"
                 :clickable="true"
@@ -60,6 +73,7 @@
                 @click="clickMarker"
               />
             </GmapMap>
+            </b-modal>
           </b-card-body>
           <b-col class="text-right">
             <b-button @click="logout">Logout</b-button>
@@ -167,7 +181,8 @@ export default {
       'getUserProfile',
       'logout',
       'patchUserProfile',
-      'patchLocation'
+      'patchLocation',
+      'patchProfilePict'
     ]),
     clickMarker(position) {
       this.coordinate = {
@@ -178,15 +193,29 @@ export default {
     closeAlert() {
       this.isSuccess = false
     },
-    handleFile(event) {
-      this.form.user_image = event.target.files[0]
-    },
     openModal() {
       this.$bvModal.show('modal-edit')
       this.form = {
         user_name: this.profile.user_name,
         user_phone: this.profile.user_phone
       }
+    },
+    upFile(event) {
+      this.profile.user_image = event.target.files[0]
+      const data = new FormData()
+      data.append('user_image', this.profile.user_image)
+      const payload = {
+        user_id: this.userId,
+        user_data: data
+      }
+      this.patchProfilePict(payload)
+        .then((result) => {
+          this.profile.user_image = result.user_image
+          this.makeToast('Profile picture updated', 'Success', 'success')
+        })
+        .catch((error) => {
+          this.makeToast(error, 'Error', 'danger')
+        })
     },
     onSubmit() {
       const setData = {
@@ -195,14 +224,21 @@ export default {
       }
 
       this.patchUserProfile(setData)
-        .then((res) => {
-          this.isSuccess = true
-          this.resMsg = res.message
+        .then((result) => {
+          this.makeToast('Profile updated', 'Success', 'success')
           this.$bvModal.hide('modal-edit')
+          this.getUserProfile(this.userId)
         })
-        .catch((err) => {
-          console.log(err)
+        .catch((error) => {
+          this.makeToast(error.data.msg, 'Error', 'danger')
         })
+    },
+    makeToast(msg, title, variant) {
+      this.$bvToast.toast(msg, {
+        title: title,
+        variant: variant,
+        solid: true
+      })
     }
   },
   created() {

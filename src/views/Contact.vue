@@ -5,8 +5,8 @@
         <h3>My Contact</h3>
       </b-col>
       <b-col md="6" v-for="(item, index) in friends" :key="index">
-        <b-card no-body>
-          <b-row no-gutters>
+        <b-card no-body style="padding: 32px">
+          <b-row no-gutters align-v="center">
             <b-col md="6" class="text-center" align-self="center">
               <b-img :src="'http://127.0.0.1:3000/' + item.user_image"></b-img>
               <b-card-text class="name"> @{{ item.user_name }} </b-card-text>
@@ -16,22 +16,23 @@
               <b-card-text class="phone">
                 {{ item.user_phone }}
               </b-card-text>
-              <b-button @click="creatingRoom(index)"
-                >Message {{ item.user_name }}
-              </b-button>
             </b-col>
             <b-col md="6">
               <b-card-body>
-                <b-card-text class="location"> Location </b-card-text>
-                <GmapMap
-                  :center="{ lat: item.user_lat, lng: item.user_lng }"
-                  :zoom="10"
-                >
-                  <GmapMarker
-                    :position="{ lat: item.user_lat, lng: item.user_lng }"
-                    :draggable="true"
-                  />
-                </GmapMap>
+                <b-button size="sm" v-b-modal.open-location>Show @{{item.user_name}} Location</b-button>
+                <br/> <br />
+                <b-modal id="open-location" title="My Location" hide-footer centered>
+                  <GmapMap :center="coordinate" :zoom="10">
+                    <GmapMarker
+                      :position="coordinate"
+                      :clickable="true"
+                      :draggable="true"
+                      @click="clickMarker"
+                    />
+                  </GmapMap>
+                </b-modal>
+                <b-button @click="creatingRoom(index)">Message to {{ item.user_name }}
+                </b-button>
               </b-card-body>
             </b-col>
           </b-row>
@@ -116,11 +117,10 @@ export default {
       }
       this.createRoom(setData)
         .then((response) => {
-          this.$router.push('/home')
+          this.$router.push('/')
         })
-        .catch((error) => {
-          console.log(error)
-          // this.$router.push('/home')
+        .catch(() => {
+          this.$router.push('/')
         })
     }
   },
