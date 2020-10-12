@@ -130,6 +130,8 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import io from 'socket.io-client'
+
 export default {
   name: 'Drawer',
   data() {
@@ -139,12 +141,16 @@ export default {
       searched: false,
       errMsg: '',
       isSuccess: false,
-      add: false
+      add: false,
+      socket: io('http://localhost:3000')
     }
   },
   created() {
     this.getListFriend(this.userId)
     this.getListRoom(this.userId)
+    this.socket.on('chatMessage', data => {
+      this.pushMessages(data)
+    })
   },
   methods: {
     ...mapActions([
@@ -152,9 +158,10 @@ export default {
       'addFriend',
       'getListFriend',
       'getListRoom',
-      'getRoomById'
+      'getRoomById',
+      'getMessageByRoom'
     ]),
-    ...mapMutations(['setRoomId']),
+    ...mapMutations(['setRoomId', 'pushMessages', 'setSelectedRoom']),
     searchFriend() {
       this.searchUser(this.keyword)
         .then((response) => {
@@ -172,7 +179,7 @@ export default {
         })
     },
     closeAlert() {
-      this.isError = true
+      this.isError = false
     },
     addToFriend() {
       const setData = {
@@ -181,20 +188,29 @@ export default {
       }
       this.addFriend(setData)
         .then((response) => {
-          this.isSuccess = true
-          this.errMsg = response
+          this.makeToast('Congrats! Say hi to your new friend', 'Success', 'success')
           this.$bvModal.hide('modal-search-friend')
         })
-        .catch((error) => {
-          console.log(error)
+        .catch(() => {
+          this.makeToast('Cannot add friend', 'Error', 'danger')
         })
     },
     selectingRoom(data) {
+      this.setSelectedRoom(true)
       const setData = {
         room_id: data.room_id,
         sender_id: this.userId
       }
       this.getRoomById(setData)
+      this.getMessageByRoom(data.room_id)
+      this.socket.emit('joinRoom', data.room_id)
+    },
+    makeToast(msg, title, variant) {
+      this.$bvToast.toast(msg, {
+        title: title,
+        variant: variant,
+        solid: true
+      })
     }
   },
   computed: {
@@ -276,6 +292,10 @@ export default {
   border: transparent;
 }
 
+.list-group-item img.mr-3 {
+  object-fit: cover;
+}
+
 @media screen and (max-width: 768px) {
   .brand h1 {
     font-size: 24px;
@@ -286,4 +306,5 @@ export default {
     height: 18px;
   }
 }
+
 </style>

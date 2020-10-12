@@ -9,7 +9,6 @@
           <b-col cols="1" class="rooms-pict" align-self="center">
             <b-img
               :src="'http://127.0.0.1:3000/' + room.user_image"
-              style="width: 64px; height: 64px"
             />
           </b-col>
           <b-col cols="10" align-self="center">
@@ -46,21 +45,20 @@
 import io from 'socket.io-client'
 import InputMessage from './InputMessage'
 
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'Chat',
   data() {
     return {
-      socket: io('http://localhost:3000'),
-      isSelected: true,
-      messages: []
+      socket: io('http://localhost:3000')
     }
   },
   components: {
     InputMessage
   },
   methods: {
+    ...mapMutations(['pushMessages']),
     handleSendMessage(data) {
       const dataMessage = {
         msg_body: data.msg,
@@ -68,20 +66,13 @@ export default {
         msg_receiver_id: this.room.receiver_id,
         room_id: this.room.room_id
       }
-      this.socket.emit('sendMessage', dataMessage, (data) => {
-        this.messages.push(data)
+      this.socket.emit('sendMessage', dataMessage, data => {
+        this.pushMessages(data)
       })
     }
   },
   computed: {
-    ...mapGetters({ userId: 'getUserId', room: 'getRoom' })
-  },
-  mounted() {
-    this.socket.emit('privateMessage', this.room.room_id)
-
-    this.socket.on('chatMessage', (data) => {
-      this.messages.push(data)
-    })
+    ...mapGetters({ userId: 'getUserId', room: 'getRoom', messages: 'getMessage', isSelected: 'getIsSelected' })
   }
 }
 </script>
@@ -97,6 +88,17 @@ export default {
 
 .room-header-row {
   padding: 1rem;
+}
+
+.room-header-row .rooms-pict img {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.room-header .col-10 {
+  padding-left: 30px;
 }
 
 .room-name {
@@ -152,4 +154,5 @@ export default {
   justify-content: center;
   align-items: center;
 }
+
 </style>

@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 
 import Auth from './modules/auth'
-import Message from './modules/message'
 import Friend from './modules/friends'
 import Profile from './modules/profile'
 import Room from './modules/room'
@@ -16,7 +15,6 @@ export default new Vuex.Store({
   actions: {},
   modules: {
     Auth,
-    Message,
     Friend,
     Profile,
     Room

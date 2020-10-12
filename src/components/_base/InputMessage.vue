@@ -10,7 +10,7 @@
     </b-col>
     <b-col cols="1">
       <b-button @click="handleMessage">
-        <b-img :src="require('../../assets/icon/plus.png')" />
+        <b-img :src="require('../../assets/icon/send.png')" />
       </b-button>
     </b-col>
   </b-row>
