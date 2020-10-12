@@ -16,16 +16,13 @@ export default {
     },
     setListFriend(state, payload) {
       state.listFriend = payload
-    },
-    setRoom(state, payload) {
-      state.room = payload
     }
   },
   actions: {
     searchUser(context, payload) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`http://127.0.0.1:3000/users/search?email=${payload}`)
+          .get(`${process.env.VUE_APP_URL}/users/search?email=${payload}`)
           .then(response => {
             context.commit('setSearchedUser', response.data.data[0])
             resolve(response.data.data[0])
@@ -38,10 +35,10 @@ export default {
     addFriend(context, payload) {
       return new Promise((resolve, reject) => {
         axios
-          .post('http://127.0.0.1:3000/friend/add', payload)
+          .post(`${process.env.VUE_APP_URL}/friend/add`, payload)
           .then(response => {
             context.commit('setFriends', response.data)
-            resolve(response.data.message)
+            resolve(response.data)
           })
           .catch(error => {
             console.log(error)
@@ -51,7 +48,7 @@ export default {
     getListFriend(context, payload) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`http://127.0.0.1:3000/friend/list/${payload}`)
+          .get(`${process.env.VUE_APP_URL}/friend/list/${payload}`)
           .then(response => {
             context.commit('setListFriend', response.data.data)
             resolve(response.data.data)
@@ -64,7 +61,7 @@ export default {
     createRoom(context, payload) {
       return new Promise((resolve, reject) => {
         axios
-          .post('http://127.0.0.1:3000/room/create', payload)
+          .post(`${process.env.VUE_APP_URL}/room/create`, payload)
           .then(response => {
             context.commit('setRoom', response.data.data)
             resolve(response.data.data)
@@ -81,9 +78,6 @@ export default {
     },
     getListFriends(state) {
       return state.listFriend
-    },
-    getRoom(state) {
-      return state.room
     }
   }
 }

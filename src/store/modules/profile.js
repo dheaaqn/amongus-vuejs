@@ -13,7 +13,7 @@ export default {
     getUserProfile(context, payload) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`http://127.0.0.1:3000/users/${payload}`)
+          .get(`${process.env.VUE_APP_URL}/users/${payload}`)
           .then(response => {
             context.commit('setUserProfile', response.data.data[0])
             resolve(response.data.data[0])
@@ -27,7 +27,7 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .patch(
-            `http://127.0.0.1:3000/users/update/profile/${payload.user_id}`,
+            `${process.env.VUE_APP_URL}/users/update/profile/${payload.user_id}`,
             payload.form
           )
           .then(response => {
@@ -43,7 +43,7 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .patch(
-            `http://127.0.0.1:3000/users/update/location/${payload.user_id}`,
+            `${process.env.VUE_APP_URL}/users/update/location/${payload.user_id}`,
             payload.user_data
           )
           .then(response => {
@@ -52,6 +52,15 @@ export default {
           .catch(error => {
             reject(error.response)
           })
+      })
+    },
+    patchProfilePict(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios.patch(`${process.env.VUE_APP_URL}/users/update/image/${payload.user_id}`, payload.user_data).then(response => {
+          resolve(response.data.data)
+        }).catch(error => {
+          reject(error.response.data.message)
+        })
       })
     }
   },
