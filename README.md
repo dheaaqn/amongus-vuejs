@@ -7,7 +7,7 @@
     <a href="https://github.com/dheaaqn/amongus-vuejs/issues">Request Feature</a>
   </p>
 
-![Image Banner](https://user-images.githubusercontent.com/59104753/95675629-ec4e4900-0be2-11eb-997a-f6f853e33f5e.jpg)
+![Image Banner](smartmockups_kgaj5bwq.jpg)
 
 ## About The Project
 
