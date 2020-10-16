@@ -35,6 +35,11 @@ const routes = [
     name: 'Contact',
     component: () => import('../views/Contact.vue'),
     meta: { requiresAuth: true }
+  }, {
+    path: '/roomchat',
+    name: 'RoomChat',
+    component: () => import('../views/Roomchat.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

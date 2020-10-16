@@ -61,8 +61,6 @@ export default {
           .get(`${process.env.VUE_APP_URL}/message/${payload}`)
           .then(response => {
             context.commit('setMessages', response.data.data)
-            // resolve(response.data.data)
-            // console.log(response.data.data)
           })
           .catch(error => {
             reject(error)

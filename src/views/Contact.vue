@@ -19,18 +19,8 @@
             </b-col>
             <b-col md="6">
               <b-card-body>
-                <b-button size="sm" v-b-modal.open-location>Show @{{item.user_name}} Location</b-button>
+                <b-button size="sm" @click="showModalLocation(item)">Show @{{item.user_name}} Location</b-button>
                 <br/> <br />
-                <b-modal id="open-location" title="My Location" hide-footer centered>
-                  <GmapMap :center="coordinate" :zoom="10">
-                    <GmapMarker
-                      :position="coordinate"
-                      :clickable="true"
-                      :draggable="true"
-                      @click="clickMarker"
-                    />
-                  </GmapMap>
-                </b-modal>
                 <b-button @click="creatingRoom(index)">Message to {{ item.user_name }}
                 </b-button>
               </b-card-body>
@@ -38,6 +28,13 @@
           </b-row>
         </b-card>
       </b-col>
+      <b-modal id="open-location" title="Location" hide-footer centered>
+        <GmapMap :center="coordinate" :zoom="15">
+          <GmapMarker
+            :position="coordinate"
+          />
+        </GmapMap>
+      </b-modal>
     </b-row>
   </div>
 </template>
@@ -92,6 +89,7 @@
 .vue-map-container {
   width: 250px;
   height: 180px;
+  margin: auto;
 }
 
 .btn-secondary {
@@ -102,12 +100,27 @@
   font-size: 14px;
   padding: 0.6em;
 }
+
+@media screen and (max-width: 425px) {
+  .card {
+    padding: 14px !important;
+  }
+
+  .card .col-md-6 {
+    text-align: center;
+  }
+}
 </style>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'Contact',
+  data() {
+    return {
+      coordinate: { lat: 0, lng: 0 }
+    }
+  },
   methods: {
     ...mapActions(['getListFriend', 'createRoom']),
     creatingRoom(index) {
@@ -122,6 +135,14 @@ export default {
         .catch(() => {
           this.$router.push('/')
         })
+    },
+    showModalLocation(data) {
+      console.log(data)
+      this.coordinate = {
+        lat: data.user_lat,
+        lng: data.user_lng
+      }
+      this.$bvModal.show('open-location')
     }
   },
   created() {

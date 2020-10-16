@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div class="none" v-if="!isSelected">
-      <p>Please select a chat to start messaging</p>
-    </div>
-    <b-container class="room" v-else>
+    <b-container class="room">
       <div class="room-header">
         <b-row class="room-header-row">
           <b-col cols="1" class="rooms-pict" align-self="center">
@@ -17,9 +14,7 @@
             <p class="room-status" v-else>Online</p>
           </b-col>
           <b-col cols="1" align-self="center">
-            <b-button style="border: transparent; background: transparent;" @click="clearChat">
-              <b-img :src="require('../../assets/icon/profile-menu.png')" />
-            </b-button>
+            <b-img :src="require('../../assets/icon/profile-menu.png')" />
           </b-col>
         </b-row>
       </div>
@@ -62,7 +57,7 @@ export default {
     InputMessage
   },
   methods: {
-    ...mapMutations(['pushMessages', 'setMessages']),
+    ...mapMutations(['pushMessages']),
     handleSendMessage(data) {
       const dataMessage = {
         msg_body: data.msg,
@@ -73,7 +68,6 @@ export default {
       this.socket.emit('sendMessage', dataMessage, data => {
         this.pushMessages(data)
       })
-      this.socket.emit('sendNotification', dataMessage)
     },
     makeToast(msg, title, variant) {
       this.$bvToast.toast(msg, {
@@ -81,10 +75,6 @@ export default {
         variant: variant,
         solid: true
       })
-    },
-    clearChat() {
-      this.setMessages('')
-      this.makeToast('Clear history chat', 'Clear chat', 'warning')
     }
   },
   computed: {
@@ -94,8 +84,6 @@ export default {
     this.socket.on('typingMessage', data => {
       this.typing = data
     })
-
-    this.socket.emit('userJoin', this.userId)
   }
 }
 </script>
@@ -106,7 +94,7 @@ export default {
 }
 
 .room-header {
-  height: 98px;
+  max-height: 90px;
 }
 
 .room-header-row {
@@ -114,8 +102,8 @@ export default {
 }
 
 .room-header-row .rooms-pict img {
-  width: 60px;
-  height: 60px;
+  width: 45px;
+  height: 45px;
   border-radius: 10px;
   object-fit: cover;
 }
@@ -143,8 +131,7 @@ export default {
 #chat-c {
   background-color: #eeeeee;
   padding: 1rem;
-  min-height: 70vh;
-  max-height: 70vh;
+  max-height: 72vh;
   overflow-y: auto;
 }
 
@@ -178,4 +165,23 @@ export default {
   align-items: center;
 }
 
+@media screen and (max-width: 425px) {
+    .room-header .col-10 {
+        padding-left: 30px;
+        padding-right: 0;
+        max-width: 320px;
+    }
+}
+
+@media screen and (max-width: 375px) {
+    .room-header .col-10 {
+        max-width: 280px;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .room-header .col-10 {
+        max-width: 210px;
+    }
+}
 </style>

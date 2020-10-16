@@ -17,10 +17,14 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import io from 'socket.io-client'
+
 export default {
   name: 'InputMessage',
   data() {
     return {
+      socket: io(process.env.VUE_APP_URL),
       message: ''
     }
   },
@@ -30,6 +34,17 @@ export default {
       this.message = ''
       this.$refs.inputMsg.focus()
     }
+  },
+  watch: {
+    message(value) {
+      value ? this.socket.emit('typing', {
+        user_name: this.user.user_name,
+        room_id: this.roomId
+      }) : this.socket.emit('typing', false)
+    }
+  },
+  computed: {
+    ...mapGetters({ roomId: 'getRoomId', user: 'getProfile' })
   }
 }
 </script>
@@ -55,5 +70,23 @@ export default {
 .input-c button:active,
 .input-c button:focus {
   background: #5277db !important;
+}
+
+@media screen and (max-width: 425px){
+  .col-11 {
+    max-width: 350px;
+  }
+}
+
+@media screen and (max-width: 375px){
+  .col-11 {
+    max-width: 310px;
+  }
+}
+
+@media screen and (max-width: 320px){
+  .col-11 {
+    max-width: 245px;
+  }
 }
 </style>

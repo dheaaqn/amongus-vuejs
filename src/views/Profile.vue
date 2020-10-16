@@ -159,6 +159,13 @@
   color: #848484;
   opacity: 0.75;
 }
+
+@media screen and (max-width: 320px) {
+  div.vue-map-container {
+    width: 260px;
+    height: 180px;
+  }
+}
 </style>
 
 <script>
@@ -214,6 +221,7 @@ export default {
           this.makeToast('Profile picture updated', 'Success', 'success')
         })
         .catch((error) => {
+          this.profile.user_image = 'unamed.png'
           this.makeToast(error, 'Error', 'danger')
         })
     },
