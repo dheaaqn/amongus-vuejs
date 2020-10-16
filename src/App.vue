@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import io from 'socket.io-client'
 
 export default {
@@ -30,10 +30,15 @@ export default {
     this.interceptorResponse()
   },
   mounted() {
+    console.log(this.userId)
+    this.socket.emit('userJoin', this.userId)
     this.socket.on('showNotification', (data) => {
       this.makeToast(`${data.msg_body}`, 'PING', 'info')
       console.log(data)
     })
+  },
+  computed: {
+    ...mapGetters({ userId: 'getUserId' })
   }
 }
 </script>

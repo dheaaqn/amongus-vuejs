@@ -62,6 +62,15 @@ export default {
           reject(error.response.data.message)
         })
       })
+    },
+    deleteProfilePict(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios.patch(`${process.env.VUE_APP_URL}/users/delete/image/${payload.user_id}`).then(response => {
+          resolve(response.data.data)
+        }).catch(error => {
+          reject(error.response.data.message)
+        })
+      })
     }
   },
   getters: {

@@ -160,7 +160,7 @@ export default {
       'getRoomById',
       'getMessageByRoom'
     ]),
-    ...mapMutations(['setRoomId', 'pushMessages', 'setSelectedRoom']),
+    ...mapMutations(['setRoomId', 'pushMessages', 'setSelectedRoom', 'setRoomId']),
     searchFriend() {
       this.searchUser(this.keyword)
         .then((response) => {
@@ -200,6 +200,7 @@ export default {
         room_id: data.room_id,
         sender_id: this.userId
       }
+      this.setRoomId(data.room_id)
       this.getRoomById(setData)
       this.getMessageByRoom(data.room_id)
       this.socket.emit('joinRoom', data.room_id)

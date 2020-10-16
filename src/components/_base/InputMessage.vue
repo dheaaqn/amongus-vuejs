@@ -38,13 +38,20 @@ export default {
   watch: {
     message(value) {
       value ? this.socket.emit('typing', {
+        user_id: this.user.user_id,
         user_name: this.user.user_name,
-        room_id: this.roomId
-      }) : this.socket.emit('typing', false)
+        room_id: this.roomId,
+        status_typing: true
+      }) : this.socket.emit('typing', {
+        user_id: this.user.user_id,
+        user_name: this.user.user_name,
+        room_id: this.roomId,
+        status_typing: false
+      })
     }
   },
   computed: {
-    ...mapGetters({ roomId: 'getRoomId', user: 'getProfile' })
+    ...mapGetters({ roomId: 'getRoomId', user: 'setUser' })
   }
 }
 </script>

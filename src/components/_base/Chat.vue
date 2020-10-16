@@ -91,11 +91,17 @@ export default {
     ...mapGetters({ userId: 'getUserId', room: 'getRoom', messages: 'getMessage', isSelected: 'getIsSelected' })
   },
   mounted() {
+    this.socket.emit('joinRoom', this.room.room_id)
     this.socket.on('typingMessage', data => {
-      this.typing = data
+      if (data.user_id !== this.userId) {
+        if (data.status_typing) {
+          this.typing = data.user_name
+        } else {
+          this.typing = false
+        }
+      }
+      console.log(data)
     })
-
-    this.socket.emit('userJoin', this.userId)
   }
 }
 </script>

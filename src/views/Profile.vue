@@ -44,7 +44,8 @@
           </b-col>
           <b-card-body>
             <b-img :src="'http://127.0.0.1:3000/' + profile.user_image"></b-img>
-            <div class="edit-icon">
+            <div class="edit">
+              <div class="edit-icon">
               <input
                 type="file"
                 ref="file"
@@ -54,6 +55,13 @@
               <p @click="$refs.file.click()" style="cursor: pointer">
                 Edit <b-icon icon="pencil-fill"></b-icon>
               </p>
+            </div>
+            <p style="margin: 0 1rem 1rem;">|</p>
+            <div class="delete-icon">
+              <p @click="deleteImage" style="cursor: pointer">
+                Delete <b-icon icon="trash-fill"></b-icon>
+              </p>
+            </div>
             </div>
             <b-card-text class="name"> @{{ profile.user_name }} </b-card-text>
             <b-card-text class="email">
@@ -160,6 +168,13 @@
   opacity: 0.75;
 }
 
+.edit {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
 @media screen and (max-width: 320px) {
   div.vue-map-container {
     width: 260px;
@@ -189,7 +204,8 @@ export default {
       'logout',
       'patchUserProfile',
       'patchLocation',
-      'patchProfilePict'
+      'patchProfilePict',
+      'deleteProfilePict'
     ]),
     clickMarker(position) {
       this.coordinate = {
@@ -239,6 +255,18 @@ export default {
         })
         .catch((error) => {
           this.makeToast(error.data.msg, 'Error', 'danger')
+        })
+    },
+    deleteImage() {
+      const payload = {
+        user_id: this.userId
+      }
+      this.deleteProfilePict(payload).then((result) => {
+        this.makeToast('Profile updated', 'Success', 'success')
+        this.getUserProfile(this.userId)
+      })
+        .catch((error) => {
+          this.makeToast(error, 'Error Failed', 'danger')
         })
     },
     makeToast(msg, title, variant) {
