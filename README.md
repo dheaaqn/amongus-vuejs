@@ -1,6 +1,6 @@
 <h1 align='center'>Vue JS - Among Us</h1>
   <p align="center">
-    <a href="https://vacatech.netlify.app/">View Demo</a>
+    <a href="https://amongus-chatapp.netlify.app">View Demo</a>
     ·
     <a href="https://github.com/dheaaqn/amongus-vuejs/issues">Report Bug</a>
     ·
