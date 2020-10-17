@@ -11,7 +11,7 @@
 
 ## About The Project
 
-realtime chat app
+Among us is a messaging app with end to end encryption built with VueJS and Socket IO.
 
 ## Built With
 
@@ -22,7 +22,7 @@ realtime chat app
 
 1. <a href="https://nodejs.org/en/download/">Node Js</a>
 2. Node_modules `npm install` or `yarn install`
-3. Vacatech Backend API [`here`](https://github.com/dheaaqn/amongus-expressjs)
+3. Among Us Backend API [`here`](https://github.com/dheaaqn/amongus-expressjs)
 
 ## Getting Started
 
@@ -41,5 +41,7 @@ VUE_APP_URL = https://backend-amongus.fwdev.online
 
 - [Axios](https://www.npmjs.com/package/axios)
 - [Vuex](https://vuex.vuejs.org/)
+- [Socket IO](https://socket.io/docs)
+- [Vue Google Maps](https://github.com/xkjyeah/vue-google-maps)
 
 ---
