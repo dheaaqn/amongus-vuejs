@@ -30,11 +30,9 @@ export default {
     this.interceptorResponse()
   },
   mounted() {
-    console.log(this.userId)
     this.socket.emit('userJoin', this.userId)
     this.socket.on('showNotification', (data) => {
       this.makeToast(`${data.msg_body}`, 'PING', 'info')
-      console.log(data)
     })
   },
   computed: {

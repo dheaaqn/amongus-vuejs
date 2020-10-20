@@ -51,22 +51,21 @@ export default {
     },
     interceptorRequest(context) {
       axios.interceptors.request.use(
-        function(config) {
+        function (config) {
           config.headers.Authorization = `Bearer ${context.state.token}`
           return config
         },
-        function(error) {
+        function (error) {
           return Promise.reject(error)
         }
       )
     },
     interceptorResponse(context) {
       axios.interceptors.response.use(
-        function(response) {
+        function (response) {
           return response
         },
-        function(error) {
-          console.log(error.response)
+        function (error) {
           if (error.response.status === 403) {
             if (
               error.response.data.msg === 'invalid token' ||

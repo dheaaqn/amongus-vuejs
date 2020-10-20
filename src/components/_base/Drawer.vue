@@ -63,7 +63,7 @@
                 class="mb-2 text-center"
               >
                 <b-img
-                  :src="'http://127.0.0.1:3000/' + user.user_image"
+                  :src="url + '/' + user.user_image"
                   style="
                     width: 100px;
                     height: 100px;
@@ -110,7 +110,7 @@
             @click="selectingRoom(item)"
           >
             <b-img
-              :src="'http://127.0.0.1:3000/' + item.user_image"
+              :src="url + '/' + item.user_image"
               rounded
               style="width: 40px; height: 40px"
               class="mr-3"
@@ -118,7 +118,9 @@
             <b-row>
               <b-col class="name text-left" md="8">{{ item.user_name }}</b-col>
               <b-col class="text-right" md="4" align-self="center">15.20</b-col>
-              <b-col class="message text-left" md="12">{{ item.user_msg }}</b-col>
+              <b-col class="message text-left" md="12">{{
+                item.user_msg
+              }}</b-col>
             </b-row>
           </b-list-group-item>
         </b-list-group>
@@ -128,187 +130,196 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import io from 'socket.io-client'
+  import { mapActions, mapGetters, mapMutations } from 'vuex'
+  import io from 'socket.io-client'
 
-export default {
-  name: 'Drawer',
-  data() {
-    return {
-      keyword: '',
-      isError: false,
-      searched: false,
-      errMsg: '',
-      isSuccess: false,
-      add: false,
-      socket: io('http://localhost:3000')
-    }
-  },
-  created() {
-    this.getListFriend(this.userId)
-    this.getListRoom(this.userId)
-    this.socket.on('chatMessage', data => {
-      this.pushMessages(data)
-    })
-  },
-  methods: {
-    ...mapActions([
-      'searchUser',
-      'addFriend',
-      'getListFriend',
-      'getListRoom',
-      'getRoomById',
-      'getMessageByRoom'
-    ]),
-    ...mapMutations(['setRoomId', 'pushMessages', 'setSelectedRoom', 'setRoomId']),
-    searchFriend() {
-      this.searchUser(this.keyword)
-        .then((response) => {
-          this.searched = true
-          if (this.user.user_id === this.userId) {
-            this.add = false
-          } else {
-            this.add = true
-          }
-        })
-        .catch((error) => {
-          this.searched = false
-          this.isError = true
-          this.errMsg = error
-        })
-    },
-    closeAlert() {
-      this.isError = false
-    },
-    addToFriend() {
-      const setData = {
-        user_id: this.userId,
-        friends_id: this.user.user_id
+  export default {
+    name: 'Drawer',
+    data() {
+      return {
+        keyword: '',
+        isError: false,
+        searched: false,
+        errMsg: '',
+        isSuccess: false,
+        add: false,
+        socket: io(process.env.VUE_APP_URL),
+        url: process.env.VUE_APP_URL
       }
-      this.addFriend(setData)
-        .then((response) => {
-          this.makeToast('Congrats! Say hi to your new friend', 'Success', 'success')
-          this.$bvModal.hide('modal-search-friend')
-        })
-        .catch(() => {
-          this.makeToast('Cannot add friend', 'Error', 'danger')
-        })
     },
-    selectingRoom(data) {
-      this.setSelectedRoom(true)
-      const setData = {
-        room_id: data.room_id,
-        sender_id: this.userId
+    created() {
+      this.getListFriend(this.userId)
+      this.getListRoom(this.userId)
+      this.socket.on('chatMessage', (data) => {
+        this.pushMessages(data)
+      })
+    },
+    methods: {
+      ...mapActions([
+        'searchUser',
+        'addFriend',
+        'getListFriend',
+        'getListRoom',
+        'getRoomById',
+        'getMessageByRoom'
+      ]),
+      ...mapMutations([
+        'setRoomId',
+        'pushMessages',
+        'setSelectedRoom',
+        'setRoomId'
+      ]),
+      searchFriend() {
+        this.searchUser(this.keyword)
+          .then((response) => {
+            this.searched = true
+            if (this.user.user_id === this.userId) {
+              this.add = false
+            } else {
+              this.add = true
+            }
+          })
+          .catch((error) => {
+            this.searched = false
+            this.isError = true
+            this.errMsg = error
+          })
+      },
+      closeAlert() {
+        this.isError = false
+      },
+      addToFriend() {
+        const setData = {
+          user_id: this.userId,
+          friends_id: this.user.user_id
+        }
+        this.addFriend(setData)
+          .then((response) => {
+            this.makeToast(
+              'Congrats! Say hi to your new friend',
+              'Success',
+              'success'
+            )
+            this.$bvModal.hide('modal-search-friend')
+          })
+          .catch(() => {
+            this.makeToast('Cannot add friend', 'Error', 'danger')
+          })
+      },
+      selectingRoom(data) {
+        this.setSelectedRoom(true)
+        const setData = {
+          room_id: data.room_id,
+          sender_id: this.userId
+        }
+        this.setRoomId(data.room_id)
+        this.getRoomById(setData)
+        this.getMessageByRoom(data.room_id)
+        this.socket.emit('joinRoom', data.room_id)
+      },
+      makeToast(msg, title, variant) {
+        this.$bvToast.toast(msg, {
+          title: title,
+          variant: variant,
+          solid: true
+        })
       }
-      this.setRoomId(data.room_id)
-      this.getRoomById(setData)
-      this.getMessageByRoom(data.room_id)
-      this.socket.emit('joinRoom', data.room_id)
     },
-    makeToast(msg, title, variant) {
-      this.$bvToast.toast(msg, {
-        title: title,
-        variant: variant,
-        solid: true
+    computed: {
+      ...mapGetters({
+        user: 'getSearchedUser',
+        userId: 'getUserId',
+        room: 'getAllRoom'
       })
     }
-  },
-  computed: {
-    ...mapGetters({
-      user: 'getSearchedUser',
-      userId: 'getUserId',
-      room: 'getAllRoom'
-    })
   }
-}
 </script>
 
 <style scoped>
-.brand {
-  margin-bottom: 2rem;
-}
+  .brand {
+    margin-bottom: 2rem;
+  }
 
-.brand h1 {
-  font-weight: 500;
-  font-size: 28px;
-  color: #7e98df;
-}
-
-.brand img {
-  width: 22px;
-  height: 22px;
-}
-
-.searchadd {
-  margin-bottom: 1rem;
-}
-
-.searchadd img {
-  width: 22px;
-  height: 22px;
-}
-
-.searchadd .btn-secondary {
-  border: transparent;
-  background-color: transparent;
-}
-
-.searchadd .form-control {
-  border: transparent;
-  background-color: #fafafa;
-  border-radius: 15px;
-  padding: 1rem 2rem;
-}
-
-.chatlist {
-  height: 75vh;
-  overflow: auto;
-}
-
-.chatlist .name {
-  font-weight: 500;
-  font-size: 18px;
-  letter-spacing: -0.165px;
-  color: #232323;
-}
-
-.chatlist .message {
-  font-size: 14px;
-  letter-spacing: -0.165px;
-  color: #7e98df;
-}
-
-.chatlist .col-md-4 {
-  font-size: 14px;
-  letter-spacing: -0.165px;
-  color: #848484;
-}
-
-.chatlist .badge-secondary {
-  background-color: #7e98df;
-}
-
-.list-group-item {
-  border: transparent;
-}
-
-.list-group-item img.mr-3 {
-  object-fit: cover;
-}
-
-.list-group-item .row {
-  width: 100%;
-}
-
-@media screen and (max-width: 768px) {
   .brand h1 {
-    font-size: 24px;
+    font-weight: 500;
+    font-size: 28px;
+    color: #7e98df;
   }
 
   .brand img {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
   }
-}
 
+  .searchadd {
+    margin-bottom: 1rem;
+  }
+
+  .searchadd img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .searchadd .btn-secondary {
+    border: transparent;
+    background-color: transparent;
+  }
+
+  .searchadd .form-control {
+    border: transparent;
+    background-color: #fafafa;
+    border-radius: 15px;
+    padding: 1rem 2rem;
+  }
+
+  .chatlist {
+    height: 75vh;
+    overflow: auto;
+  }
+
+  .chatlist .name {
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: -0.165px;
+    color: #232323;
+  }
+
+  .chatlist .message {
+    font-size: 14px;
+    letter-spacing: -0.165px;
+    color: #7e98df;
+  }
+
+  .chatlist .col-md-4 {
+    font-size: 14px;
+    letter-spacing: -0.165px;
+    color: #848484;
+  }
+
+  .chatlist .badge-secondary {
+    background-color: #7e98df;
+  }
+
+  .list-group-item {
+    border: transparent;
+  }
+
+  .list-group-item img.mr-3 {
+    object-fit: cover;
+  }
+
+  .list-group-item .row {
+    width: 100%;
+  }
+
+  @media screen and (max-width: 768px) {
+    .brand h1 {
+      font-size: 24px;
+    }
+
+    .brand img {
+      width: 18px;
+      height: 18px;
+    }
+  }
 </style>
